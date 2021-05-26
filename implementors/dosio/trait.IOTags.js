@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["windloading"] = [{"text":"impl IOTags for <a class=\"struct\" href=\"windloading/struct.WindLoading.html\" title=\"struct windloading::WindLoading\">WindLoading</a>","synthetic":false,"types":["windloading::WindLoading"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

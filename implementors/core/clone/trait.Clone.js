@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["windloading"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a> for <a class=\"enum\" href=\"windloading/enum.Loads.html\" title=\"enum windloading::Loads\">Loads</a>","synthetic":false,"types":["windloading::Loads"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

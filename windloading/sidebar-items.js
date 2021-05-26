@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Loads","Wind loads forces and moments"],["WindLoadsError",""]],"struct":[["WindLoading","Wind loading sources"],["WindLoads","Wind loads builder"]],"trait":[["MatchWindLoads",""]]});
