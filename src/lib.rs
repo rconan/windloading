@@ -14,7 +14,7 @@ use dosio::{
     DOSIOSError, Dos, IOTags, IO,
 };
 use serde;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_pickle as pkl;
 use std::{fmt, fs::File, io, io::BufReader, path::Path};
 
@@ -67,7 +67,7 @@ macro_rules! loads {
         /// Wind loads forces and moments
         ///
         /// A time vector containing vectors of forces and moments
-        #[derive(Deserialize, Debug,Clone)]
+        #[derive(Serialize, Deserialize, Debug,Clone)]
         pub enum Loads {
             $(#[serde(rename = $name)]
               $variant(Vec<Vec<f64>>)),+
@@ -109,6 +109,9 @@ macro_rules! loads {
                 }
             }
         }
+	pub fn wind_loads_name() -> Vec<String> {
+	    vec![$($name.to_string()),+]
+	}
     };
 }
 loads!(
@@ -125,7 +128,9 @@ loads!(
     "OSS_M1_lcl_6F",
     OSSM1Lcl6F,
     "MC_M2_lcl_force_6F",
-    MCM2Lcl6F
+    MCM2Lcl6F,
+    "OSS_mirrorCovers_6F",
+    OSSMirrorCovers6F
 );
 
 pub trait MatchWindLoads {
@@ -134,7 +139,7 @@ pub trait MatchWindLoads {
 }
 macro_rules! io_match_wind_loads {
     ($($variant:ident),+) => {
-        impl<T> MatchWindLoads for IO<T> {
+        impl<T: std::fmt::Debug> MatchWindLoads for IO<T> {
             /// Matches a wind loads to a DOS `IO` returning the wind load value as an iterator over the first `n` elements
             fn data(&self, wind_loads: &Loads) -> Option<std::vec::IntoIter<Vec<f64>>> {
                 match (self,wind_loads) {
@@ -159,13 +164,14 @@ io_match_wind_loads!(
     OSSCRING6F,
     OSSCellLcl6F,
     OSSM1Lcl6F,
-    MCM2Lcl6F
+    MCM2Lcl6F,
+    OSSMirrorCovers6F
 );
 
 /// Wind loads builder
 ///
 /// This structure is used to read the forces and moments time series from a data file and to create the [`WindLoading`] structure
-#[derive(Deserialize)]
+#[derive(Default, Deserialize, Serialize)]
 pub struct WindLoads {
     /// forces and moments time series
     #[serde(rename = "outputs")]
@@ -183,8 +189,8 @@ impl WindLoads {
     pub fn from_pickle<P: AsRef<Path>>(path: P) -> Result<Self> {
         let f = File::open(path)?;
         let r = BufReader::with_capacity(1_000_000_000, f);
-        let v: serde_pickle::Value = serde_pickle::from_reader(r)?;
-        Ok(pkl::from_value(v)?)
+        serde_pickle::from_reader(r).map_err(WindLoadsError::PickleRead)
+        //        Ok(pkl::from_value(v)?)
     }
     /// Returns the number of samples in the time series
     fn len(&self) -> Result<usize> {
@@ -290,6 +296,13 @@ impl WindLoads {
     pub fn m1_segments(mut self) -> Result<Self> {
         self.tagged_loads.push(IO::OSSM1Lcl6F {
             data: self.tagged_load(&jar::OSSM1Lcl6F::io())?,
+        });
+        Ok(self)
+    }
+    /// Selects loads on the M1 mirror covers
+    pub fn m1_covers(mut self) -> Result<Self> {
+        self.tagged_loads.push(IO::OSSMirrorCovers6F {
+            data: self.tagged_load(&jar::OSSMirrorCovers6F::io())?,
         });
         Ok(self)
     }
