@@ -15,7 +15,6 @@ use dosio::{
 };
 use serde;
 use serde::{Deserialize, Serialize};
-use serde_pickle as pkl;
 use std::{fmt, fs::File, io, io::BufReader, path::Path};
 
 #[derive(Debug)]
@@ -128,7 +127,7 @@ loads!(
     "OSS_M1_lcl_6F",
     OSSM1Lcl6F,
     "MC_M2_lcl_force_6F",
-    MCM2Lcl6F,
+    MCM2LclForce6F,
     "OSS_mirrorCovers_6F",
     OSSMirrorCovers6F
 );
@@ -164,7 +163,7 @@ io_match_wind_loads!(
     OSSCRING6F,
     OSSCellLcl6F,
     OSSM1Lcl6F,
-    MCM2Lcl6F,
+    MCM2LclForce6F,
     OSSMirrorCovers6F
 );
 
@@ -308,14 +307,21 @@ impl WindLoads {
     }
     /// Selects loads on the M2 segments
     pub fn m2_segments(mut self) -> Result<Self> {
-        self.tagged_loads.push(IO::MCM2Lcl6F {
-            data: self.tagged_load(&jar::MCM2Lcl6F::io())?,
+        self.tagged_loads.push(IO::MCM2LclForce6F {
+            data: self.tagged_load(&jar::MCM2LclForce6F::io())?,
+        });
+        Ok(self)
+    }
+    /// Associates a FEM input with the loads on the M2 segments
+    pub fn m2_segments_into(mut self, fem: IO<()>) -> Result<Self> {
+        self.tagged_loads.push(IO::MCM2LclForce6F {
+            data: self.tagged_load(&fem)?,
         });
         Ok(self)
     }
     pub fn m2_asm_reference_bodies(mut self) -> Result<Self> {
         self.tagged_loads.push(IO::MCM2RB6F {
-            data: self.tagged_load(&jar::MCM2Lcl6F::io())?,
+            data: self.tagged_load(&jar::MCM2LclForce6F::io())?,
         });
         Ok(self)
     }
