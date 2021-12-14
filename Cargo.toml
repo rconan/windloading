@@ -7,6 +7,6 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dosio = { git = "https://github.com/rconan/dosio.git", branch = "ns-opm-im" }
+dosio = "^0.1.2"
 serde = "1.0.126"
 serde-pickle = "0.6.2"
