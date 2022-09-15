@@ -1,0 +1,43 @@
+[package]
+name = "windloading"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dos-actors = { version = "3.0.0", package = "gmt_dos-actors", features = [
+    "fem",
+    "fsm",
+    "apache-arrow",
+    "mount-ctrl",
+    "windloads",
+] }
+anyhow = "1.0.62"
+bincode = "1.3.3"
+env_logger = "0.9.0"
+fem = { version = "0.3.0", package = "gmt-fem" }
+log = "0.4.17"
+nalgebra = "0.31.1"
+parse-monitors = "0.1.1"
+tokio = { version = "1.20.1", features = ["rt-multi-thread", "macros"] }
+uid = { version = "0.1.2", package = "dos-uid" }
+vec_box = "1.0.0"
+
+[features]
+default = ["ze30"]
+ze00 = ["dos-actors/mount-ctrl_s1000d002ze00"]
+ze30 = ["dos-actors/mount-ctrl_s1000d002ze30"]
+ze60 = ["dos-actors/mount-ctrl_s1000d002ze60"]
+
+[[bin]]
+name = "windloading00"
+path = "src/main.rs"
+required-features = ["ze00"]
+
+[[bin]]
+name = "windloading60"
+path = "src/main.rs"
+required-features = ["ze60"]
+
+[[bin]]
+name = "windloading30"
+path = "src/main.rs"
