@@ -1,24 +1,19 @@
+use arrow::Arrow;
 use dos_actors::{
-    clients::{
-        arrow_client::Arrow,
-        fem::M1SegmentsAxialD,
-        mount::{Mount, MountEncoders, MountSetPoint, MountTorques},
-        windloads,
-        windloads::{M1Loads, M2Loads, MountLoads},
-        Smooth, Weight,
-    },
+    clients::{Smooth, Weight},
     prelude::*,
     ArcMutex,
 };
+use dos_clients_io::*;
 use fem::{
     dos::{DiscreteModalSolver, ExponentialMatrix},
     fem_io::*,
     FEM,
 };
+use mount::Mount;
 use nalgebra as na;
 use parse_monitors::cfd;
 use std::{collections::HashMap, env, fs::File, path::Path};
-use uid::UID;
 use vec_box::vec_box;
 
 fn fig_2_mode(sid: u32) -> na::DMatrix<f64> {
@@ -33,28 +28,6 @@ fn fig_2_mode(sid: u32) -> na::DMatrix<f64> {
         na::DMatrix::from_vec(151, 579, fig_2_mode).insert_rows(151, 11, 0f64)
     }
 }
-
-#[derive(UID)]
-#[alias(
-    name = "OSSM1Lcl",
-    client = "DiscreteModalSolver<ExponentialMatrix>",
-    traits = "Write,Size"
-)]
-enum M1RigidBodyMotions {}
-#[derive(UID)]
-#[alias(
-    name = "MCM2Lcl6D",
-    client = "DiscreteModalSolver<ExponentialMatrix>",
-    traits = "Write,Size"
-)]
-enum M2RigidBodyMotions {}
-#[derive(UID)]
-#[alias(
-    name = "M1SegmentsAxialD",
-    client = "DiscreteModalSolver<ExponentialMatrix>",
-    traits = "Write"
-)]
-enum M1BendingModes {}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -199,17 +172,17 @@ async fn main() -> anyhow::Result<()> {
         .confirm()?;
     source
         .add_output()
-        .build::<M1Loads>()
+        .build::<CFDM1WindLoads>()
         .into_input(&mut smooth_m1_loads);
 
     source
         .add_output()
-        .build::<M2Loads>()
+        .build::<CFDM2WindLoads>()
         .into_input(&mut smooth_m2_loads);
 
     source
         .add_output()
-        .build::<MountLoads>()
+        .build::<CFDMountWindLoads>()
         .into_input(&mut smooth_mount_loads);
 
     // FEM
@@ -219,15 +192,15 @@ async fn main() -> anyhow::Result<()> {
 
     smooth_mount_loads
         .add_output()
-        .build::<CFD2021106F>()
+        .build::<CFDMountWindLoads>()
         .into_input(&mut fem);
     smooth_m1_loads
         .add_output()
-        .build::<OSSM1Lcl6F>()
+        .build::<CFDM1WindLoads>()
         .into_input(&mut fem);
     smooth_m2_loads
         .add_output()
-        .build::<MCM2LclForce6F>()
+        .build::<CFDM2WindLoads>()
         .into_input(&mut fem);
 
     let mut mount_set_point: Initiator<_> = Signals::new(3, n_step).into();
@@ -256,7 +229,7 @@ async fn main() -> anyhow::Result<()> {
         .await;
     fem.add_output()
         .bootstrap()
-        .build::<M1BendingModes>()
+        .build::<M1ModeShapes>()
         .logn(&mut sink, 162 * 7)
         .await;
 

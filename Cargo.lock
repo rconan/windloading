@@ -378,9 +378,9 @@ dependencies = [
 
 [[package]]
 name = "dos-uid-derive"
-version = "0.1.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f147852b95d6b918e34d516870c1af5c2497a59f6d363ee25b1d0150ca85c578"
+checksum = "d53917d9f82553be2595455b0cff7286baf1cbf0fa3a82b6ed7d68a117c9eae0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -389,9 +389,7 @@ dependencies = [
 
 [[package]]
 name = "dos-uid-derive"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d53917d9f82553be2595455b0cff7286baf1cbf0fa3a82b6ed7d68a117c9eae0"
+version = "0.3.2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -426,8 +424,6 @@ dependencies = [
 [[package]]
 name = "fem-macros"
 version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dbb5b006f2930490db1f82e7914e92e54680d722433e4979b8ea646ef26610d8"
 dependencies = [
  "arrow",
  "parquet",
@@ -598,15 +594,15 @@ checksum = "9b919933a397b79c37e33b77bb2aa3dc8eb6e165ad809e58ff75bc7db2e34574"
 [[package]]
 name = "gmt-fem"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f860099853c74b4789d0c90aecd4803469735d0a0a1b2bec2e91653ffacfc4b0"
 dependencies = [
  "bincode",
  "dos-uid",
- "dos-uid-derive 0.1.0",
+ "dos-uid-derive 0.3.1",
  "env_logger",
  "fem-macros",
  "geotrans 0.1.1",
+ "gmt_dos-actors",
+ "gmt_dos-clients_io",
  "log",
  "nalgebra",
  "num-complex",
@@ -619,43 +615,68 @@ dependencies = [
 
 [[package]]
 name = "gmt_dos-actors"
-version = "3.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0cd3d8c26035cce0a73e1e71994dda9d9b01ee6fd3f5b302e299d6524e3ef2a7"
+version = "3.0.1"
 dependencies = [
- "anyhow",
- "arrow",
  "async-trait",
- "bincode",
  "chrono",
- "dos-uid",
- "dos-uid-derive 0.3.1",
+ "dos-uid-derive 0.3.2",
  "flume",
  "futures",
- "geotrans 0.2.2",
- "glob",
- "gmt-fem",
- "gmt_mount-ctrl",
  "humantime",
- "linya 0.2.2",
+ "linya",
  "log",
- "m2-ctrl",
- "parquet",
- "parse-monitors",
- "paste",
- "quote",
- "serde",
- "skyangle",
- "syn",
  "thiserror",
  "tokio",
 ]
 
 [[package]]
+name = "gmt_dos-clients_arrow"
+version = "0.1.0"
+dependencies = [
+ "arrow",
+ "gmt_dos-actors",
+ "log",
+ "parquet",
+ "paste",
+ "thiserror",
+]
+
+[[package]]
+name = "gmt_dos-clients_io"
+version = "0.1.0"
+dependencies = [
+ "gmt_dos-actors",
+]
+
+[[package]]
+name = "gmt_dos-clients_mount"
+version = "0.1.0"
+dependencies = [
+ "gmt_dos-actors",
+ "gmt_dos-clients_io",
+ "gmt_mount-ctrl",
+ "log",
+ "thiserror",
+]
+
+[[package]]
+name = "gmt_dos-clients_windloads"
+version = "0.1.0"
+dependencies = [
+ "geotrans 0.2.2",
+ "gmt-fem",
+ "gmt_dos-actors",
+ "gmt_dos-clients_io",
+ "log",
+ "parse-monitors",
+ "thiserror",
+]
+
+[[package]]
 name = "gmt_mount-ctrl"
-version = "2.0.0"
+version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "354961f15e6e53d31ad7d98bc38f7fe60e6454a5550c81bf861aa2364bd3ffb7"
+checksum = "10c3f61363c28a907eb4c4ea1bcff76fbb28454b9053525e827f1af4c4373881"
 dependencies = [
  "gmt_mount-ctrl_sampling1000-damping002",
  "paste",
@@ -925,15 +946,6 @@ name = "libm"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "292a948cd991e376cf75541fe5b97a1081d713c618b4f1b9500f8844e49eb565"
-
-[[package]]
-name = "linya"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e90a11136022dd2ed64ee2f200af664a518049957d7277d172e2c37d2441700"
-dependencies = [
- "terminal_size",
-]
 
 [[package]]
 name = "linya"
@@ -1298,7 +1310,7 @@ dependencies = [
  "glob",
  "indicatif",
  "itertools",
- "linya 0.3.0",
+ "linya",
  "log",
  "nalgebra",
  "npyz",
@@ -1316,9 +1328,9 @@ dependencies = [
 
 [[package]]
 name = "paste"
-version = "1.0.8"
+version = "1.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9423e2b32f7a043629287a536f21951e8c6a82482d0acb1eeebfc90bc2225b22"
+checksum = "b1de2e551fb905ac83f73f7aedf2f0cb4a0da7e35efa24a202a936269f1f18e1"
 
 [[package]]
 name = "pin-project"
@@ -1641,12 +1653,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "skyangle"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14f0f0e12026f389b18e71af142c337bccab8a569f44853460ace72bea066544"
-
-[[package]]
 name = "slab"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1777,18 +1783,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.32"
+version = "1.0.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f5f6586b7f764adc0231f4c79be7b920e766bb2f3e51b3661cdb263828f19994"
+checksum = "0a99cb8c4b9a8ef0e7907cd3b617cc8dc04d571c4e73c8ae403d80ac160bb122"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.32"
+version = "1.0.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12bafc5b54507e0149cdf1b145a5d80ab80a90bcd9275df43d4fff68460f6c21"
+checksum = "3a891860d3c8d66fec8e73ddb3765f90082374dbaaa833407b904a94f1a7eb43"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2058,11 +2064,15 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bincode",
- "dos-uid",
  "env_logger",
  "gmt-fem",
  "gmt_dos-actors",
+ "gmt_dos-clients_arrow",
+ "gmt_dos-clients_io",
+ "gmt_dos-clients_mount",
+ "gmt_dos-clients_windloads",
  "log",
+ "m2-ctrl",
  "nalgebra",
  "parse-monitors",
  "tokio",
